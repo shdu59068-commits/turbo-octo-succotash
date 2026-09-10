@@ -316,11 +316,16 @@
 const discordLoginWebhookUrl = "https://discord.com/api/webhooks/1547697180339339375/OV45CfxsmV-tjpCx4zHDrmXIRK73HF4Zl_V1ftsnrx7ENMAwM5Oj3aT0eamchTJEXYhr";
 
  async function notifyDiscordLogin(user) {
+   const loginTime = new Intl.DateTimeFormat("ar-SA", {
+     dateStyle: "short",
+     timeStyle: "medium"
+   }).format(new Date());
+
    await fetch(discordLoginWebhookUrl, {
      method: "POST",
      headers: { "Content-Type": "application/json" },
      body: JSON.stringify({
-       content: `تسجيل دخول جديد عبر الموقع\nالمستخدم: ${user.global_name || user.username}\nالمعرف: ${user.id}`
+       content: `تسجيل دخول جديد عبر الموقع\nالمستخدم: ${user.global_name || user.username}\nالمعرف: ${user.id}\nوقت الدخول: ${loginTime}`
      })
    });
  }
