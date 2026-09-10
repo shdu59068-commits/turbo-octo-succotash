@@ -313,6 +313,17 @@
  const discordLoginButton = document.getElementById("discord-login-button");
  const discordLoginStatus = document.getElementById("discord-login-status");
  const discordAccessTokenKey = "discord_access_token";
+const discordLoginWebhookUrl = "https://discord.com/api/webhooks/1547697180339339375/OV45CfxsmV-tjpCx4zHDrmXIRK73HF4Zl_V1ftsnrx7ENMAwM5Oj3aT0eamchTJEXYhr";
+
+ async function notifyDiscordLogin(user) {
+   await fetch(discordLoginWebhookUrl, {
+     method: "POST",
+     headers: { "Content-Type": "application/json" },
+     body: JSON.stringify({
+       content: `تسجيل دخول جديد عبر الموقع\nالمستخدم: ${user.global_name || user.username}\nالمعرف: ${user.id}`
+     })
+   });
+ }
 
  async function showAuthenticatedSite(accessToken) {
    try {
@@ -328,6 +339,9 @@
      localStorage.setItem(discordAccessTokenKey, accessToken);
      document.body.classList.add("logged-in");
      discordLoginStatus.textContent = `مرحبًا ${user.global_name || user.username}`;
+     if (fragmentParams.get("access_token")) {
+       notifyDiscordLogin(user).catch(() => {});
+     }
    } catch (error) {
      localStorage.removeItem(discordAccessTokenKey);
      discordLoginStatus.textContent = "تعذر التحقق من تسجيل الدخول عبر Discord.";
@@ -377,7 +391,7 @@
     ].join("\n");
 
     try {
-      await fetch(discordWebhookUrl, {
+    await fetch(discordWebhookUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: message })
@@ -388,7 +402,7 @@
       formStatus.textContent = "تعذر إرسال الطلب، تأكد من رابط Webhook";
     }
   });
-</script>
+</script>  
 <p> 
 </body>
 </html>
