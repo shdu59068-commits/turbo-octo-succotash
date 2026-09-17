@@ -24,21 +24,28 @@
     a { color: #7db7ff; }
     input, textarea { display: block; width: min(100%, 430px); margin: 6px 0 14px; padding: 9px 11px; border: 1px solid #666; border-radius: 6px; background: #333; color: #fff; }
     textarea { min-height: 90px; }
-    button { padding: 10px 24px; border: 0; border-radius: 6px; background: #8b1e1e; color: #fff; cursor: pointer; }
+    button { padding: 10px 24px; border: 0; border-radius: 6px; background: #240202; color: #fff; cursor: pointer; }
     button:hover { background: #a83232; }
     #manager-list { display: none; padding: 14px 18px; border: 1px solid #555; border-radius: 8px; background: #303030; }
     #manager-status, #form-status { color: #ffb0b0; }
+    #inquiry-status { color: #ffb0b0; }
     hr { margin: 28px 0; border: 0; border-top: 1px solid #555; }
   </style>
 </head>
 <body>
-  <h1 class="notice">ملاحظة: الموقع تجريبي وقد تأتي تحديثات في أي لحظة</h1>
+  <h1 class="notice">التحديث القادم  : لم يتم التحديد.</h1>
   <h1>مسؤول الإدارة: عبدالله ماجد</h1>
   <h2>نائب مسؤول الإدارة: خالد علي</h2>
   <p>السلام عليكم ورحمة الله وبركاته. فكرة موقع استديو درع هي تنظيم الإدارة والمسؤولين ومواعيد الاستلامات.</p>
 
   <h2>مواعيد الاستلامات</h2>
-  <p>لم يتم تحديد الجدول إلى إشعار آخر.</p>
+  <table>
+<rt>
+  
+</rt>
+    
+
+  </table>
 
   <h2>العقوبات الإدارية</h2>
   <ol>
@@ -60,7 +67,6 @@
   <h2>الروابط</h2>
   <p><a href="https://discord.gg/rCQAY6g7X">سيرفر Discord</a></p>
   <p><a href="https://youtube.com/@shield_studio0">قناة اليوتيوب</a></p>
-  <p><a href="#manager-login">قائمة مدير الإدارة</a></p>
 
   <hr>
   <h2>الأسئلة الشائعة</h2>
@@ -69,31 +75,8 @@
   <p>هل اللعبة مجانية؟ نعم، أول شهر مجاني، وبعد ذلك سيكون السعر 12 ريالًا كحد أقصى.</p>
 
   <hr>
-  <h2>قوانين الإدارة</h2>
-  <ol>
-    <li>جميع الصلاحيات الممنوحة مسؤولية وليست امتيازًا، ويُمنع استخدامها خارج القوانين.</li>
-    <li>لا يتم تنفيذ الحظر إلا بدليل واضح، ويجب تسجيل سببه بدقة.</li>
-    <li>يُستخدم الـ Timeout كإجراء تأديبي مؤقت حسب حجم المخالفة.</li>
-    <li>يُمنع منح الرتب أو تعديل هيكلها دون موافقة الإدارة العليا.</li>
-    <li>يلتزم الإداري بالاحترام والحياد ويحافظ على سرية معلومات الإدارة.</li>
-    <li>يجب استلام التذاكر والرد عليها ومعالجة محتواها بجدية وتوثيق الإجراءات.</li>
-    <li>يُمنع وضع روابط أو صور سيرفرات أخرى في الملف الشخصي.</li>
-  </ol>
+  
 
-  <h2 id="manager-login">قائمة مدير الإدارة</h2>
-  <form id="manager-login-form">
-    <label>رمز الدخول<input id="manager-code" type="password" autocomplete="off" required></label>
-    <button type="submit">دخول</button>
-  </form>
-  <p id="manager-status"></p>
-  <div id="manager-list">
-    <h3>مرحبًا بك في قائمة مدير الإدارة</h3>
-    <ul>
-      <li>إدارة المسؤولين والرتب</li>
-      <li>متابعة طلبات النقاط</li>
-      <li>مراجعة العقوبات الإدارية</li>
-    </ul>
-  </div>
 
   <h2>طلب نقاط</h2>
   <form id="points-form">
@@ -114,18 +97,181 @@
       document.getElementById("form-status").textContent = "تم استلام طلب النقاط.";
       event.target.reset();
     });
+  </script>
+  <h3>طلب استفسار</h3>
+  <p>مثال: متى التحديث القادم؟</p>
+  <form id="inquiry-form">
+    <label for="inquiry-user">اليوزر أو Discord ID</label>
+    <input type="text" id="inquiry-user" name="user" required>
+    <label for="inquiry-text">الاستفسار</label>
+    <textarea id="inquiry-text" name="question" required></textarea>
+    <label for="inquiry-number">رقم الاستفسار</label>
+    <input type="number" id="inquiry-number" name="number" min="1" required>
+    <button type="submit">إرسال الاستفسار</button>
+  </form>
+  <p id="inquiry-status" role="status"></p>
 
-    document.getElementById("manager-login-form").addEventListener("submit", function (event) {
+  <script>
+    const discordWebhookUrl = "https://discord.com/api/webhooks/1549733925847310367/caU7tT3V7b6OE_QTlnAskM0KrIhK4VFhNve_C1gKUgLGKVdAKyks4AV8IputgrVZaJge";
+
+    document.getElementById("inquiry-form").addEventListener("submit", async function (event) {
       event.preventDefault();
-      const status = document.getElementById("manager-status");
-      const managerList = document.getElementById("manager-list");
-      const isValid = document.getElementById("manager-code").value === "SDFAH";
+      const form = event.target;
+      const status = document.getElementById("inquiry-status");
+      const formData = new FormData(form);
 
-      managerList.style.display = isValid ? "block" : "none";
-      status.textContent = isValid ? "تم الدخول بنجاح." : "رمز الدخول غير صحيح.";
-      status.style.color = isValid ? "#9fdfad" : "#ffb0b0";
-      if (isValid) event.target.reset();
+      if (discordWebhookUrl.includes("ضع_رابط")) {
+        status.textContent = "يجب إعداد رابط Discord Webhook أولًا.";
+        return;
+      }
+
+      status.textContent = "جارٍ إرسال الاستفسار...";
+
+      try {
+        const response = await fetch(discordWebhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: "سجل الاستفسارات",
+            embeds: [{
+              title: "استفسار جديد",
+              color: 9109504,
+              fields: [
+                { name: "اليوزر أو Discord ID", value: formData.get("user") },
+                { name: "رقم الاستفسار", value: String(formData.get("number")) },
+                { name: "الاستفسار", value: formData.get("question") }
+              ],
+              timestamp: new Date().toISOString()
+            }]
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error("تعذر إرسال الطلب");
+        }
+
+        status.textContent = "تم إرسال الاستفسار بنجاح.";
+        form.reset();
+      } catch (error) {
+        status.textContent = "حدث خطأ أثناء الإرسال، حاول مرة أخرى.";
+      }
     });
   </script>
+  <hr> 
+  <h2> 
+    نظام تسلسل الرتب 'إلادارية'
+    <p>
+      1- MANAGEMENT
+    </p>
+    <p> 
+      2-  Moderator
+    </p>
+    <p>
+      3- Senior Moderator
+    </p>
+    <p>
+      4- Supervisor
+    </p>
+    <p>
+      5- Admin Trainee
+    </p>
+    <p> 
+    6- Admin Assistant
+    </p>
+    <p> 
+7- Junior Administrator
+    </p>
+    <p> 
+    8- ADMIN STUDIO DERA
+    </p>
+    <p>
+    9-  General Supervisor
+    </p>
+  </h2>
+  <hr>
+  <h2>
+    نظام الترقيات إلادارية 
+ <P>
+——————————————————————————————————
+ </P>
+ <p>
+  من MANAGEMENT ↠ Moderator
+ </p>
+ <p>
+  تحذير {14}
+ </p>
+ <p>
+  التكتات {17}
+ </p>
+<p>
+من   Moderator ↠ Senior Moderator
+</p>
+<p>
+  تحذير {17}
+</p>
+<p>
+  تكتات {9}
+</p>
+<p> 
+  من Senior Moderator ↠  Supervisor
+</p>
+<p>
+  تحذير {20}
+</p>
+<p>
+تكتات {14}
+</p>
+<p>
+  من Supervisor ↠ Admin Trainee 
+</p>
+تحذير {26}
+<p>
+  تكتات {17}
+</p>
+<p>
+  من Admin Trainee ↠ Admin Assistant
+<p>
+  <P>
+    تحذير {30}
+  </P>
+  <P>
+    تكتات {20}
+  </P>
+  <P>
+  من Admin Assistant ↠ Junior Administrator
+  </P>
+  <p>
+    تحذير {35}
+  </p>
+<p>
+  تكتات {24}
+</p>
+</h2>
+<h1>———————————————————————————————————————————————
+  <p>
+    ملاحظات؛
+  </p>
+  <p>
+يحسب ايضاً التفاعل الاداري والاستلام الاداري
+  </p>
+  <p>
+    في حال عدم التفاعل وعدم الاستلام يتم الغاء الترقية
+  </p>
+  <p>
+ايضاً لم يتم الترقيه الا اذا كان لديك 
+  </p>
+  <p>
+    1- نقاط إدارية ↠ 1nd ⭐
+  </p>
+  <p>
+    نقاط إدارية ↠ 2nd ⭐ 
+  </p>
+  <p>
+    نقاط إدارية ↠ 3nd ⭐
+  </p>
+  <p>
+    إداري إلاسبوع ⭐
+  </p>
+</h1>
 </body>
 </html>
