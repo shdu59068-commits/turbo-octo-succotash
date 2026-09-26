@@ -35,7 +35,7 @@
 <body>
   <h1 class="notice">التحديث القادم  : لم يتم التحديد.</h1>
   <h1>مسؤول الإدارة: عبدالله ماجد</h1>
-  <h2>نائب مسؤول الإدارة: خالد علي</h2>
+  <h2>نائب مسؤول الإدارة: فهد المطيري</h2>
   <p>السلام عليكم ورحمة الله وبركاته. فكرة موقع استديو درع هي تنظيم الإدارة والمسؤولين ومواعيد الاستلامات.</p>
 
   <h2>مواعيد الاستلامات</h2>
@@ -92,10 +92,103 @@
   <p id="form-status"></p>
 
   <script>
-    document.getElementById("points-form").addEventListener("submit", function (event) {
-      event.preventDefault();
-      document.getElementById("form-status").textContent = "تم استلام طلب النقاط.";
-      event.target.reset();
+    const discordWebhookUrl = "https://discord.com/api/webhooks/1549733925847310367/caU7tT3V7b6OE_QTlnAskM0KrIhK4VFhNve_C1gKUgLGKVdAKyks4AV8IputgrVZaJge";
+
+    window.addEventListener("DOMContentLoaded", function () {
+      const pointsForm = document.getElementById("points-form");
+      const inquiryForm = document.getElementById("inquiry-form");
+
+      if (pointsForm) {
+        pointsForm.addEventListener("submit", async function (event) {
+          event.preventDefault();
+          const form = event.target;
+          const status = document.getElementById("form-status");
+          const formData = new FormData(form);
+
+          if (discordWebhookUrl.includes("ضع_رابط")) {
+            status.textContent = "يجب إعداد رابط Discord Webhook أولًا.";
+            return;
+          }
+
+          status.textContent = "جارٍ إرسال طلب النقاط...";
+
+          try {
+            const response = await fetch(discordWebhookUrl, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                username: "سجل طلبات النقاط",
+                embeds: [{
+                  title: "طلب نقاط جديد",
+                  color: 16753920,
+                  fields: [
+                    { name: "الاسم", value: String(formData.get("name") || "غير محدد") },
+                    { name: "الرتبة الإدارية", value: String(formData.get("admin-rank") || "غير محدد") },
+                    { name: "عدد النقاط", value: String(formData.get("points") || "0") },
+                    { name: "السبب", value: String(formData.get("reason") || "غير محدد") },
+                    { name: "هل أنت من المسؤولين أو الإدارة العليا؟", value: String(formData.get("is-admin") || "غير محدد") }
+                  ],
+                  timestamp: new Date().toISOString()
+                }]
+              })
+            });
+
+            if (!response.ok) {
+              throw new Error("تعذر إرسال الطلب");
+            }
+
+            status.textContent = "تم الإرسال إلى Discord.";
+            form.reset();
+          } catch (error) {
+            status.textContent = "فشل الإرسال، حاول مرة أخرى لاحقًا.";
+          }
+        });
+      }
+
+      if (inquiryForm) {
+        inquiryForm.addEventListener("submit", async function (event) {
+          event.preventDefault();
+          const form = event.target;
+          const status = document.getElementById("inquiry-status");
+          const formData = new FormData(form);
+
+          if (discordWebhookUrl.includes("ضع_رابط")) {
+            status.textContent = "يجب إعداد رابط Discord Webhook أولًا.";
+            return;
+          }
+
+          status.textContent = "جارٍ إرسال الاستفسار...";
+
+          try {
+            const response = await fetch(discordWebhookUrl, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                username: "سجل الاستفسارات",
+                embeds: [{
+                  title: "استفسار جديد",
+                  color: 9109504,
+                  fields: [
+                    { name: "اليوزر أو Discord ID", value: String(formData.get("user") || "غير محدد") },
+                    { name: "رقم الاستفسار", value: String(formData.get("number") || "0") },
+                    { name: "الاستفسار", value: String(formData.get("question") || "غير محدد") }
+                  ],
+                  timestamp: new Date().toISOString()
+                }]
+              })
+            });
+
+            if (!response.ok) {
+              throw new Error("تعذر إرسال الطلب");
+            }
+
+            status.textContent = "تم الإرسال إلى Discord.";
+            form.reset();
+          } catch (error) {
+            status.textContent = "فشل الإرسال، حاول مرة أخرى لاحقًا.";
+          }
+        });
+      }
     });
   </script>
   <h3>طلب استفسار</h3>
@@ -110,53 +203,6 @@
     <button type="submit">إرسال الاستفسار</button>
   </form>
   <p id="inquiry-status" role="status"></p>
-
-  <script>
-    const discordWebhookUrl = "https://discord.com/api/webhooks/1549733925847310367/caU7tT3V7b6OE_QTlnAskM0KrIhK4VFhNve_C1gKUgLGKVdAKyks4AV8IputgrVZaJge";
-
-    document.getElementById("inquiry-form").addEventListener("submit", async function (event) {
-      event.preventDefault();
-      const form = event.target;
-      const status = document.getElementById("inquiry-status");
-      const formData = new FormData(form);
-
-      if (discordWebhookUrl.includes("ضع_رابط")) {
-        status.textContent = "يجب إعداد رابط Discord Webhook أولًا.";
-        return;
-      }
-
-      status.textContent = "جارٍ إرسال الاستفسار...";
-
-      try {
-        const response = await fetch(discordWebhookUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            username: "سجل الاستفسارات",
-            embeds: [{
-              title: "استفسار جديد",
-              color: 9109504,
-              fields: [
-                { name: "اليوزر أو Discord ID", value: formData.get("user") },
-                { name: "رقم الاستفسار", value: String(formData.get("number")) },
-                { name: "الاستفسار", value: formData.get("question") }
-              ],
-              timestamp: new Date().toISOString()
-            }]
-          })
-        });
-
-        if (!response.ok) {
-          throw new Error("تعذر إرسال الطلب");
-        }
-
-        status.textContent = "تم إرسال الاستفسار بنجاح.";
-        form.reset();
-      } catch (error) {
-        status.textContent = "حدث خطأ أثناء الإرسال، حاول مرة أخرى.";
-      }
-    });
-  </script>
 <hr> 
   <h2> 
     نظام تسلسل الرتب 'إلادارية'
